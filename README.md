@@ -9,9 +9,11 @@ Ein Propeller-Chip Mini-Computer mit ESP32 als VGA-Terminal
 - Treiber für I2C, Portausgabe, DS18B12 Temp.Sensor, WS2812-LED
 - einfacher Aufbau (nur 3Chips)
 - einfache Programmierung
-- Details zur Hardware werden noch veröffentlicht
+- Details zur Hardware werden nim Ordner Hardware abgelegt
 
 Benötigt werden:
-BST-Compiler für Propeller-Spin-Dateien (siehe Ordner BST)
-Arduino IDE mit ESP32-Erweiterung
-FabGl-Library (siehe http://www.fabglib.org)
+- BST-Compiler für Propeller-Spin-Dateien (siehe Ordner BST)
+- Arduino IDE mit ESP32-Erweiterung
+- FabGl-Library (siehe http://www.fabglib.org)
+
+
