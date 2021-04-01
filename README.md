@@ -10,3 +10,8 @@ Ein Propeller-Chip Mini-Computer mit ESP32 als VGA-Terminal
 - einfacher Aufbau (nur 3Chips)
 - einfache Programmierung
 - Details zur Hardware werden noch veröffentlicht
+
+Benötigt werden:
+BST-Compiler für Propeller-Spin-Dateien (siehe Ordner BST)
+Arduino IDE mit ESP32-Erweiterung
+FabGl-Library (siehe http://www.fabglib.org)
