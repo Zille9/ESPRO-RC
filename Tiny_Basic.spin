@@ -89,7 +89,10 @@ Logbuch         :
                 -Funktionstasten wieder integriert ->F1-F6
                 -DIR-Ausgabe auf Standard begrenzt ->nur sichtbare,erweiterte Ausgabe
                 -I2C-Ping Ausgabe funktioniert, ob die anderen Funktionen funktionieren,muss ich noch testen
-                -768 Longs frei
+                -779 Longs frei
+
+03-04-2021      -List-Syntaxhervorhebung wieder eingebaut, jetzt wird der Speicher allerdings langsam knapp
+                -683 Longs frei
 
  --------------------------------------------------------------------------------------------------------- }}
 
@@ -219,6 +222,24 @@ KEY_OS          = $08
    RX           = 24
    TX           = 25
    num_of_toks  = 101
+
+'Farben
+Schwarz =0
+ROT     =1
+GRUEN   =2
+GELB    =3
+BLAU    =4
+PINK    =5
+CYAN    =6
+WEISS   =7
+GRAU    =8
+HROT    =9
+HGRUEN  =10
+HGELB   =11
+HBLAU   =12
+HPINK   =13
+HCYAN   =14
+HWEISS  =15
 
 'DS1812 Parameter
   OW_DATA           = 0                                 ' 1-wire data pin
@@ -442,7 +463,9 @@ PRI init
 '************ startparameter fuer Dir-Befehl *********************************************************************************************************
   dzeilen:=18
   modus  :=2                                                                    'Modus1=compact, 2=lang 0=unsichtbar
-
+  hintergr:=schwarz
+  farbe:=hweiss
+  color_set(hintergr,farbe)
   ios.printnl
 
 obj '************************** Datei-Unterprogramme ******************************************************************************************************************************
@@ -1001,6 +1024,7 @@ PRI getstr:a|nt,b,str ,f                                                        
               b:=(a-1)*13
               a:=DIR_RAM+b                                                      'Adresse Dateiname im eRam
               stringlesen(a)
+
          163,200,196,195,193:                                                   'Left$,Right$,Mid$,Upper$,Lower$
                skipspaces
                stringfunc2(nt)
@@ -1567,7 +1591,7 @@ PRI scanFilename(f,mode,kennung):chars| c
 
 con '*************************************** Programmlisting ausgeben **************************************************************************************************************
 
-PRI listout|a,b,c,d,e,f,g,rm,states,qs,ds,rs',fr,qs,ds,rs,blau,gruen,orang,rot,hellblau,grau,lila,gelb,weiss,schwarz
+PRI listout|a,b,c,d,e,f,g,rm,states,qs,ds,rs,fr
 
 
                b := 0                                                           'Default line range
@@ -1586,31 +1610,85 @@ PRI listout|a,b,c,d,e,f,g,rm,states,qs,ds,rs',fr,qs,ds,rs,blau,gruen,orang,rot,h
                   d := ios.ram_rdword(a)                                            'zeilennummer aus eram holen
                   e:=a+2                                                        'nach der Zeilennummer adresse der zeile
                   if d => b and d =< c                                          'bereich von bis zeile
-                                                                                'nur im Modus0 wird farbig ausgegeben
+                     Color_set(schwarz,hweiss)
                      ios.printdec(d)                                                'zeilennummer ausgeben
                      ios.printchar(" ")                                             'freizeichen
                      rs:=0
                      repeat while rm:=ios.ram_rdbyte(e++)                           'gesuchte Zeilen ausgeben
                             if rm=> 128
                                rm-=128
+                                  color_set(schwarz,hgruen)
                                   ios.print(@@toks[rm])                             'token zurueckverwandeln
-                                  ios.printchar(" ")
-                            else
-                               ios.printchar(rm)                                    'alle anderen Zeichen ausgeben
+                                  if (rm>50 or rm<32 or rm==40 or rm==42 or rm==47 or rm==48) or (rm>34 and rm<39)
+                                     ios.printchar(" ")
 
-                     ios.printnl                                                    'naechste Zeile
+                                                              '****************************** Farbausgabe *********************************************************************
+                                  case rm
+                                       79,87,98,99               : states:="F"                           'Befehlsoptionen haben die gleiche Farbe, wie der Grundbefehl
+                                                                   ds:=rs:=0
+
+
+                                       40                        :'DATA
+                                                                   ds:=1
+                                                                   fr:=hcyan
+                                       7                         : 'REM
+                                                                   rs:=1
+                                                                   fr:=hgelb
+                                       other                     : ds:=rs:=0
+                                                                   states:=0
+                            else
+                               if ds<1 and rs<1
+                                     case rm
+                                             32:                    states:=0
+                                          quote:                    if qs                                    'Texte in Anführungszeichen sind rot
+                                                                       qs:=0
+                                                                    else
+                                                                       qs:=1
+                                                                       fr:=hrot
+                                          "$"  :                    fr:=hrot                                  'Strings sind rot
+                                          "0".."9","."    :         ifnot qs                                 'numerische Werte sind blau
+                                                                          ifnot states=="V"                  'Zahlen in Variablennamen sind blau
+                                                                                fr:=hblau
+                                                                          states:=0
+                                          "%","#"         :         ifnot qs                                 'numerische Werte sind blau
+                                                                          states:="N"
+                                                                          fr:=hblau
+                                          44,58,59,"(",")","[","]": ifnot qs                                 'Befehlstrennzeichen (:) ist hellblau
+                                                                          fr:=hblau
+                                                                          states:=0
+                                          "a".."z","A".."Z":                                                  'Variablen sind lila
+                                                                    ifnot qs
+                                                                          fr:=hpink
+
+                                                                          ifnot states=="F"
+                                                                              if states=="N"
+                                                                                 fr:=hblau
+                                                                              else
+                                                                                 states:="V"
+                                                                          else                                'Befehlsoptionen sind gruen
+                                                                              fr:=hgruen
+                                          other            :        ifnot qs                                  'Operatoren sind grau
+                                                                          fr:=grau
+                                                                          states:=0
+
+
+                            '****************************** Farbausgabe *********************************************************************
+                               color_set(schwarz,fr)
+                               ios.printchar(rm)                                                        'alle anderen Zeichen ausgeben
+
+                     ios.printnl                                                                         'naechste Zeile
                      states:=0
-                     f++                                                        'Zeilenanzahl
-                     if f==18                                                   'nach 18 Zeilen Ausgabe pausieren
-                        if ios.ser_rx==24                                           'mit Str-X raus
+                     f++                                                                                 'Zeilenanzahl
+                     if f==18                                                                            'nach 18 Zeilen Ausgabe pausieren
+                        if ios.ser_rx==24                                                                'mit Str-X raus
                            quit
                         else
                            f:=0
                   else
-                     e:=ios.ram_keep(e)'+1                                          'zur nächsten zeile springen
+                     e:=ios.ram_keep(e)'+1                                                               'zur nächsten zeile springen
 
-                  a := e                                                        'adresse der naechsten Zeile
-
+                  a := e                                                                                 'adresse der naechsten Zeile
+  color_set(hintergr,farbe)
 con '***************************************** Befehlsabarbeitung ****************************************************************************************************************
 PRI texec | ht, nt, restart,a,b,c,d,e,f,h,elsa,fvar,tab_typ,e_step,f_limit,g_loop
 
@@ -2133,6 +2211,8 @@ PRI texec | ht, nt, restart,a,b,c,d,e,f,h,elsa,fvar,tab_typ,e_step,f_limit,g_loo
                  farbe:=expr(1)&$F
                  komma
                  hintergr:=expr(1)&$F
+                 Color_Set(hintergr,farbe)
+                 {
                  ios.ser_str(string(27,"["))
                  hintergr+=40                           'Standardfarben
                  if hintergr>47
@@ -2144,6 +2224,7 @@ PRI texec | ht, nt, restart,a,b,c,d,e,f,h,elsa,fvar,tab_typ,e_step,f_limit,g_loo
                     farbe+=52                           'hellere Farben ab 90
                  ios.ser_dec(farbe)
                  ios.ser_tx("m")
+                 }
 
              215:'TIMER
                   timerfunction
@@ -2280,6 +2361,20 @@ PRI texec | ht, nt, restart,a,b,c,d,e,f,h,elsa,fvar,tab_typ,e_step,f_limit,g_loo
          restart := 1
          tp++
 
+pri Color_set(h,v)
+
+    ios.ser_str(string(27,"["))
+    h+=40                           'Standardfarben
+    if h>47
+       h+=52                        'hellere Farben ab 100
+    ios.ser_dec(h)
+    ios.ser_tx(";")
+    v+=30                           'Standardfarben
+    if v>37
+       v+=52                        'hellere Farben ab 90
+    ios.ser_dec(v)
+    ios.ser_tx("m")
+
 con'******************************************* Sonder-Funktionen ********************************************************************************************************************
 PRI getTemperature(OW_PIN) : temp
   ow.start(OW_PIN)                                      ' start 1-wire object, pin 0
@@ -2302,38 +2397,39 @@ PRI getTemperature(OW_PIN) : temp
   ow.stop
   'mindestens eine Sekunde warten, bovor neu gelesen wird
 
-Pri I2C_Funktion| p,nx,function
+Pri I2C_Funktion| p,nx,i,function
     function:=spaces&caseBit
     skipspaces
     klammerauf
         case function
-            "I"    :param(1)
+            "I"    :
+                    param(1)
                     klammerzu
                     SCL:=prm[0]
                     SDA:=prm[1]
                     setupx
 
-            "S"    :p:=expr(1)
-                    klammerzu
-                    if p==1
-                       i2cStart                                              'Start
-                    else
-                       i2cStop                                               'Stop
-
-            "W"    : p:=expr(1)                                              'write byte
+            "W"    : p:=expr(1)                                              'Anzahl Daten
+                     komma
+                     param(p-1)
                      klammerzu
-                     return i2cWrite(p)                                      'p=byte was geschrieben werden soll
+                     i:=0
+                     i2cStart
+                     repeat p
+                         nx:=i2cWrite(prm[i++])                              'p=byte was geschrieben werden soll
+                     i2cStop
+                     return nx
 
             "R"    : p:=expr(1)                                              'read byte(ack)0 oder read(nak)1
+                     komma
+                     param(p-1)
                      klammerzu
-                     return i2cRead(p)
-
-            "D"    : p:=expr(1)                                              'warte auf i2c-Device
-                     klammerzu
-                     i2cwait(p)                                              'p=deviceId -> device is the device address %000 - %111
-
-            "P"    :p:=expr(1)                                               'Adresse anpingen, wenn Device vorhanden=0 nicht vorhanden=1
-                    return ping(p)
+                     i:=0
+                     i2cStart
+                     repeat p
+                         nx:=i2cRead(prm[i++])
+                     i2cStop
+                     return nx
 
             other:
                    errortext(3)
