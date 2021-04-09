@@ -467,7 +467,7 @@ PRI init
 '************ startparameter fuer Dir-Befehl *********************************************************************************************************
   dzeilen:=18
   modus  :=2                                                                    'Modus1=compact, 2=lang 0=unsichtbar
-  hintergr:=blau
+  hintergr:=schwarz
   farbe:=hCyan
   color_set(hintergr,farbe)
   ios.ser_tx($90)                                                               'Font 0 laden
@@ -1623,14 +1623,14 @@ PRI listout|a,b,c,d,e,f,g,rm,states,qs,ds,rs,fr
                   d := ios.ram_rdword(a)                                            'zeilennummer aus eram holen
                   e:=a+2                                                        'nach der Zeilennummer adresse der zeile
                   if d => b and d =< c                                          'bereich von bis zeile
-                     Color_set(blau,hweiss)
+                     Color_set(schwarz,hweiss)
                      ios.printdec(d)                                                'zeilennummer ausgeben
                      ios.printchar(" ")                                             'freizeichen
                      rs:=0
                      repeat while rm:=ios.ram_rdbyte(e++)                           'gesuchte Zeilen ausgeben
                             if rm=> 128
                                rm-=128
-                                  color_set(blau,hgruen)
+                                  color_set(schwarz,hgruen)
                                   ios.print(@@toks[rm])                             'token zurueckverwandeln
                                   if (rm>50 or rm<32 or rm==40 or rm==42 or rm==47 or rm==48) or (rm>34 and rm<39)
                                      ios.printchar(" ")
@@ -1686,7 +1686,7 @@ PRI listout|a,b,c,d,e,f,g,rm,states,qs,ds,rs,fr
 
 
                             '****************************** Farbausgabe *********************************************************************
-                               color_set(blau,fr)
+                               color_set(schwarz,fr)
                                ios.printchar(rm)                                                        'alle anderen Zeichen ausgeben
 
                      ios.printnl                                                                         'naechste Zeile
@@ -1813,7 +1813,7 @@ PRI texec | ht, nt, restart,a,b,c,d,e,f,h,elsa,fvar,tab_typ,e_step,f_limit,g_loo
                          ";": tp++
                          ",": ios.ser_tx(9)                                     'Tab ausführen
                               tp++
-                         ":",0:'ios.printchar(fReturn)
+                         ":",0:ios.printnl
                                quit
 
 
