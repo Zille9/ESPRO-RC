@@ -1,0 +1,28 @@
+Sockel 8p		1x
+Sockel 40p	1x
+Elko 470µ 		2x
+Quarz 5Mhz	1x
+Kond. 100nF 	8x
+Elko 10µF 		2x
+R150 Ohm		2x
+R120 Ohm		4x
+R270 Ohm		2x
+R400 Ohm		3x
+R470 Ohm		2x
+R800 Ohm		3x
+R2kOhm		5x
+R10kOhm		6x
+Buchsenleiste
+19 pol.			2x
+4pol.			5x
+
+Wannenstecker 40pol. 1x
+Stiftleiste 7pol. 2x
+Stiftleiste 4pol. 1x
+Stiftleiste 2pol. 4x
+
+VGA-Buchse	1x
+Mini-Din 6pol. 	2x
+Audio-Buchse	1x
+
+LED 5mm   	1x

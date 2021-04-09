@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="1.27" unitdist="mm" unit="mm" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
@@ -15928,7 +15928,7 @@ KS-S stereo microphone/headphone jack&lt;p&gt;
 <part name="R22" library="rcl" deviceset="R-EU_" device="0204/7" value="10k"/>
 <part name="VDD3" library="supply1" deviceset="VDD" device=""/>
 <part name="VDD9" library="supply1" deviceset="VDD" device=""/>
-<part name="C1" library="rcl" deviceset="C-EU" device="025-030X050" value="2,2µ"/>
+<part name="C1" library="rcl" deviceset="C-EU" device="025-030X050" value="100nF"/>
 <part name="VSS6" library="supply1" deviceset="VSS" device=""/>
 <part name="VDD18" library="supply1" deviceset="VDD" device=""/>
 <part name="VSS10" library="supply1" deviceset="VSS" device=""/>
@@ -16096,7 +16096,7 @@ KS-S stereo microphone/headphone jack&lt;p&gt;
 <wire x1="256.54" y1="132.08" x2="256.54" y2="-208.28" width="1.016" layer="94"/>
 <wire x1="256.54" y1="-208.28" x2="-266.7" y2="-208.28" width="1.016" layer="94"/>
 <wire x1="-266.7" y1="-208.28" x2="-266.7" y2="132.08" width="1.016" layer="94"/>
-<text x="78.74" y="-200.66" size="6.4516" layer="94">ESPRO-RC V1.0</text>
+<text x="78.74" y="-200.66" size="6.4516" layer="94">ESPRO-RC V1.1</text>
 <text x="224.79" y="-171.45" size="2.1844" layer="97">EEPROM-LOOP</text>
 </plain>
 <instances>
