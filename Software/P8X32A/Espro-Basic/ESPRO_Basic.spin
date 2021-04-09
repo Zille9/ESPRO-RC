@@ -1620,18 +1620,18 @@ PRI listout|a,b,c,d,e,f,g,rm,states,qs,ds,rs,fr
 
                a := speicheranfang
                repeat while a < speicherende-2
-                  d := ios.ram_rdword(a)                                            'zeilennummer aus eram holen
+                  d := ios.ram_rdword(a)                                        'zeilennummer aus eram holen
                   e:=a+2                                                        'nach der Zeilennummer adresse der zeile
                   if d => b and d =< c                                          'bereich von bis zeile
                      Color_set(schwarz,hweiss)
-                     ios.printdec(d)                                                'zeilennummer ausgeben
-                     ios.printchar(" ")                                             'freizeichen
+                     ios.printdec(d)                                            'zeilennummer ausgeben
+                     ios.printchar(" ")                                         'freizeichen
                      rs:=0
-                     repeat while rm:=ios.ram_rdbyte(e++)                           'gesuchte Zeilen ausgeben
+                     repeat while rm:=ios.ram_rdbyte(e++)                       'gesuchte Zeilen ausgeben
                             if rm=> 128
                                rm-=128
                                   color_set(schwarz,hgruen)
-                                  ios.print(@@toks[rm])                             'token zurueckverwandeln
+                                  ios.print(@@toks[rm])                         'token zurueckverwandeln
                                   if (rm>50 or rm<32 or rm==40 or rm==42 or rm==47 or rm==48) or (rm>34 and rm<39)
                                      ios.printchar(" ")
 
@@ -1653,23 +1653,23 @@ PRI listout|a,b,c,d,e,f,g,rm,states,qs,ds,rs,fr
                                if ds<1 and rs<1
                                      case rm
                                              32:                    states:=0
-                                          quote:                    if qs                                    'Texte in Anführungszeichen sind rot
+                                          quote:                    if qs                                    'Texte in Anführungszeichen sind gelb
                                                                        qs:=0
                                                                     else
                                                                        qs:=1
                                                                        fr:=hgelb
-                                          "$"  :                    fr:=hrot                                  'Strings sind rot
-                                          "0".."9","."    :         ifnot qs                                 'numerische Werte sind blau
-                                                                          ifnot states=="V"                  'Zahlen in Variablennamen sind blau
+                                          "$"  :                    fr:=hgelb                                'Strings sind gelb
+                                          "0".."9","."    :         ifnot qs                                 'numerische Werte sind weiss
+                                                                          ifnot states=="V"                  'Zahlen in Variablennamen sind weiss
                                                                                 fr:=hweiss
                                                                           states:=0
-                                          "%","#"         :         ifnot qs                                 'numerische Werte sind blau
+                                          "%","#"         :         ifnot qs                                 'numerische Werte sind weiss
                                                                           states:="N"
                                                                           fr:=hweiss
-                                          44,58,59,"(",")","[","]": ifnot qs                                 'Befehlstrennzeichen (:) ist hellblau
+                                          44,58,59,"(",")","[","]": ifnot qs                                 'Befehlstrennzeichen (:) ist weiss
                                                                           fr:=hweiss
                                                                           states:=0
-                                          "a".."z","A".."Z":                                                  'Variablen sind lila
+                                          "a".."z","A".."Z":                                                  'Variablen sind pink
                                                                     ifnot qs
                                                                           fr:=hpink
 
@@ -1680,7 +1680,7 @@ PRI listout|a,b,c,d,e,f,g,rm,states,qs,ds,rs,fr
                                                                                  states:="V"
                                                                           else                                'Befehlsoptionen sind gruen
                                                                               fr:=hgruen
-                                          other            :        ifnot qs                                  'Operatoren sind grau
+                                          other            :        ifnot qs                                  'Operatoren sind weiss
                                                                           fr:=hweiss'grau
                                                                           states:=0
 
