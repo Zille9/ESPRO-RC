@@ -4,7 +4,7 @@ Propeller-ESP32-Retro-Computer
 - Er kombiniert die einfache Programmierbarkeit und die Möglichkeit Programme von SD-Karte zu starten 
 - mit den Grafikfähigkeiten der FabGl-Library im ESP32 als leistungsfähiges VGA-Terminal
 - Als RAM wird ein PSRAM64H mit 8MByte Ram verwendet.
-- Hauptprogramm ist ein umfangreicher Basic-Interpreter (weitere Programme folgen)
+- Hauptprogramm ist ein umfangreicher Basic-Interpreter (weitere Programme sollen folgen)
 
 Zur Installation werden benötigt:
 - Arduino-IDE mit ESP32-Erweiterung
