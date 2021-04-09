@@ -95,7 +95,8 @@ Logbuch         :
 03-04-2021      -List-Syntaxhervorhebung wieder eingebaut, jetzt wird der Speicher allerdings langsam knapp
                 -Clearing-Routine um For-Next-Speicherbereich erweitert, wird beim Programmstart gelöscht
                 -Startbild vom ESP in den Prop überführt - macht den Treiber im ESP universell
-                -660 Longs frei
+                -Fehler in REM-Befehl behoben ->wurde bei Print-Befehl als Fehler behandelt
+                -668 Longs frei
 
  --------------------------------------------------------------------------------------------------------- }}
 
@@ -466,18 +467,19 @@ PRI init
 '************ startparameter fuer Dir-Befehl *********************************************************************************************************
   dzeilen:=18
   modus  :=2                                                                    'Modus1=compact, 2=lang 0=unsichtbar
-  hintergr:=schwarz
+  hintergr:=blau
   farbe:=hCyan
   color_set(hintergr,farbe)
-  ios.ser_tx($8F)                                                               'Font 0 laden
-  ios.print_cls
+  ios.ser_tx($90)                                                               'Font 0 laden
+  ios.print_cls                                                                 'bildschirm löschen
+  errortext(40)                                                                 'Titelanzeige
+  ios.ser_tx(9)                                                                 '3 Tabs weiter
   ios.ser_tx(9)
   ios.ser_tx(9)
-  ios.print(string("ESPRO-RC Basic V1.5 - "))
   ios.printdec(userptr-speicherende)
-  ios.print(string(" Basic-Bytes free"))
-  farbe:=hweiss
-  color_set(hintergr,farbe)
+  errortext(42)                                                                 'freie Bytes anzeigen
+  'farbe:=hweiss
+  'color_set(hintergr,farbe)                                                     'textfarbe auf weiss setzen
   ios.printnl
 
 obj '************************** Datei-Unterprogramme ******************************************************************************************************************************
@@ -523,8 +525,6 @@ con '********************************** Basic-Programm als TXT-Datei von SD-Card
 pri import(mode)|i,adr
     adr:=ios#PARAM
     i:=0
-    'ios.ram_wrbyte(GMode,MMARK_RAM)                                                  'Grafikmode merken
-
     repeat strsize(@f0)                                                               'Dateiname in Parameter-Ram schreiben
           ios.ram_wrbyte(f0[i++],adr++)
     ios.ram_wrbyte(0,adr++)
@@ -1278,7 +1278,8 @@ PRI factor | tok, a,b,c,d,e,g,f,fnum                                            
       "a".."z","A".."Z":
              fnum:=readvar_name(tok)
              c:=getvar(fnum,VAR_TBL)
-             return c                                                              'und zurueckgeben
+             return c                                                           'und zurueckgeben
+      135: return                                                               'bei REM nichts machen
       139: ' RND <factor>
            a:=klammer(1)
            a*=1000
@@ -1622,14 +1623,14 @@ PRI listout|a,b,c,d,e,f,g,rm,states,qs,ds,rs,fr
                   d := ios.ram_rdword(a)                                            'zeilennummer aus eram holen
                   e:=a+2                                                        'nach der Zeilennummer adresse der zeile
                   if d => b and d =< c                                          'bereich von bis zeile
-                     Color_set(schwarz,hweiss)
+                     Color_set(blau,hweiss)
                      ios.printdec(d)                                                'zeilennummer ausgeben
                      ios.printchar(" ")                                             'freizeichen
                      rs:=0
                      repeat while rm:=ios.ram_rdbyte(e++)                           'gesuchte Zeilen ausgeben
                             if rm=> 128
                                rm-=128
-                                  color_set(schwarz,hgruen)
+                                  color_set(blau,hgruen)
                                   ios.print(@@toks[rm])                             'token zurueckverwandeln
                                   if (rm>50 or rm<32 or rm==40 or rm==42 or rm==47 or rm==48) or (rm>34 and rm<39)
                                      ios.printchar(" ")
@@ -1645,7 +1646,7 @@ PRI listout|a,b,c,d,e,f,g,rm,states,qs,ds,rs,fr
                                                                    fr:=hcyan
                                        7                         : 'REM
                                                                    rs:=1
-                                                                   fr:=hgelb
+                                                                   fr:=weiss
                                        other                     : ds:=rs:=0
                                                                    states:=0
                             else
@@ -1656,17 +1657,17 @@ PRI listout|a,b,c,d,e,f,g,rm,states,qs,ds,rs,fr
                                                                        qs:=0
                                                                     else
                                                                        qs:=1
-                                                                       fr:=hrot
+                                                                       fr:=hgelb
                                           "$"  :                    fr:=hrot                                  'Strings sind rot
                                           "0".."9","."    :         ifnot qs                                 'numerische Werte sind blau
                                                                           ifnot states=="V"                  'Zahlen in Variablennamen sind blau
-                                                                                fr:=hblau
+                                                                                fr:=hweiss
                                                                           states:=0
                                           "%","#"         :         ifnot qs                                 'numerische Werte sind blau
                                                                           states:="N"
-                                                                          fr:=hblau
+                                                                          fr:=hweiss
                                           44,58,59,"(",")","[","]": ifnot qs                                 'Befehlstrennzeichen (:) ist hellblau
-                                                                          fr:=hblau
+                                                                          fr:=hweiss
                                                                           states:=0
                                           "a".."z","A".."Z":                                                  'Variablen sind lila
                                                                     ifnot qs
@@ -1674,18 +1675,18 @@ PRI listout|a,b,c,d,e,f,g,rm,states,qs,ds,rs,fr
 
                                                                           ifnot states=="F"
                                                                               if states=="N"
-                                                                                 fr:=hblau
+                                                                                 fr:=hweiss
                                                                               else
                                                                                  states:="V"
                                                                           else                                'Befehlsoptionen sind gruen
                                                                               fr:=hgruen
                                           other            :        ifnot qs                                  'Operatoren sind grau
-                                                                          fr:=weiss'grau
+                                                                          fr:=hweiss'grau
                                                                           states:=0
 
 
                             '****************************** Farbausgabe *********************************************************************
-                               color_set(schwarz,fr)
+                               color_set(blau,fr)
                                ios.printchar(rm)                                                        'alle anderen Zeichen ausgeben
 
                      ios.printnl                                                                         'naechste Zeile
@@ -1780,7 +1781,6 @@ PRI texec | ht, nt, restart,a,b,c,d,e,f,h,elsa,fvar,tab_typ,e_step,f_limit,g_loo
                        184:skipspaces                                            'TAB 0..9
                            a:=klammer(1) & $F
                            repeat a
-                               'ios.ser_str(string(27,"[C"))
                                ios.ser_tx(9)
 
                        187,201:skipspaces
@@ -1813,7 +1813,7 @@ PRI texec | ht, nt, restart,a,b,c,d,e,f,h,elsa,fvar,tab_typ,e_step,f_limit,g_loo
                          ";": tp++
                          ",": ios.ser_tx(9)                                     'Tab ausführen
                               tp++
-                         ":",0:ios.printchar(fReturn)
+                         ":",0:'ios.printchar(fReturn)
                                quit
 
 
@@ -2262,8 +2262,6 @@ PRI texec | ht, nt, restart,a,b,c,d,e,f,h,elsa,fvar,tab_typ,e_step,f_limit,g_loo
 
              213:'Cls ESC "_B" "$"
                   ios.print_cls
-                  'ios.ser_str(string(27,"[f"))          'home
-                  'ios.ser_str(string(27,"_B$"))         'cls
 
              214:'Pos
                   a:=expr(1)                            'ESC "[" X ";" Y "f"

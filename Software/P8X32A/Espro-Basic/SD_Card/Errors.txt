@@ -37,9 +37,9 @@ Missing Point !
 <Key? / ESC >
 File-Read-Error !
 Missing  Equal Sign !
-* Vers.3.50-01/2021 *
+                * ESPRO-RC-Basic Vers.1.10 - 04/2021 *
 Invalid Stringlenght !
--Basic-Bytes-Free *
+-Basic-Bytes-Free
  Datei(en)
 Invalid Graphicmode !
 Out of Memory Error !
