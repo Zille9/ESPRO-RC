@@ -299,6 +299,8 @@ sub_peekadr
                         call    #CLOCK
                         call    #CLOCK
                         call    #CLOCK
+                        test    _DIR_IN,ina           wz ' Test input bit
+
 sub_peekadr_ret         ret
 sub_peek
                         mov     _tmp,#0                 '_tmp löschen
@@ -312,7 +314,6 @@ sub_peek
                         add     _tmp,_tmp2
                         shr     _tmp,#8
                         call    #CLOCK
-
 sub_peek_ret            ret
 
 '******************************RAM-Adresse setzen***************************************
@@ -365,15 +366,16 @@ SPIRESET                mov     outa,_RESET_A             '$66 Kommando Reset fo
                         jmp     #cog_ready
 
 '**************************************************************************************
-CLOCK                   or      outa,ClkPin            ' Toggle clock
+CLOCK                   nop
+                        or      outa,ClkPin            ' Toggle clock
                         xor     outa,ClkPin
-
+                        nop
 CLOCK_ret               ret
 
 
 
 _DIR_OUT      long %00000000_00000011_00001111_00000000
-_DIR_IN       long %00000000_00000011_00000000_00000000
+_DIR_IN       long %00000000_00000011_11110000_00000000
 _BUS_INIT     long %00000000_00000000_00000000_00000000
 
 _SIO0         long %00000000_00000011_00000001_00000000
@@ -382,7 +384,6 @@ _SIO0_Out1    long %00000000_00000000_00000001_00000000
 
 _RESET_A      long %00000000_00000000_00000110_00000000 'Kommando Reset folgt $66
 _RESET_B      long %00000000_00000000_00001001_00000000 'Kommando Reset $99
-
 
 _COM38_A      long %00000000_00000000_00000011_00000000 'Kommando schreiben MSB
 _COM38_B      long %00000000_00000000_00001000_00000000 'Kommando schreiben LSB

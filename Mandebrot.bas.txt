@@ -1,0 +1,37 @@
+'MANDELBROT.BAS - Draws mandelbrot set fractal images 
+' by loki 
+
+Dim As Integer MAXIT, COUNT 
+
+'Specify initial values 
+RealOffset = -2.0 
+ImaginOffset = -0.85 
+MAXIT=70 'max iterations 
+
+GAP = MM.VRES / MM.HRES 
+SIZE = 2.8 
+XDelta = SIZE / MM.HRES 
+YDelta = (SIZE * GAP) / MM.VRES 
+CLS 
+
+'Loop processing - visit every pixel in screen area and base colour of pixel 
+' on the number of iterations required to escape boundary conditions 
+' If count hits max iterations then pixel hasn't escaped and is part of the set (the 'inner sea') 
+FOR X = 0 TO 639 
+Cx = X * Xdelta + RealOffset 
+FOR Y = 0 TO 479
+Cy = Y * YDelta + ImaginOffset 
+Zr = 0.0 
+Zi = 0.0 
+COUNT = 0 
+'Begin Iteration loop, checking boundary conditions on each loop 
+DO WHILE (( COUNT <= MAXIT ) AND (( Zr * Zr + Zi * Zi ) <= 4 )) 
+new_Zr = Zr * Zr - Zi * Zi + Cx 
+new_Zi = 2 * Zr * Zi + Cy 
+Zr = new_Zr 
+Zi = new_Zi 
+COUNT = COUNT + 1 
+LOOP 
+pset X, Y, (COUNT and 4) * 4177920 + (COUNT and 2) * 32640 + (COUNT and 1) * 255) 
+NEXT Y 
+NEXT X 

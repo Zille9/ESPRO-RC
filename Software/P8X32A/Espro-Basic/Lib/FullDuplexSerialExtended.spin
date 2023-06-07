@@ -4,6 +4,9 @@
 ''*********************************************
 
 CON
+_CLKMODE     = XTAL1 + PLL4X
+_XINFREQ     = 5_000_000
+
   buffer_length = 256                 'can be 2, 4, 8, 16, 32, 64, 128, 256
   buffer_mask   = buffer_length - 1
   
@@ -22,7 +25,7 @@ VAR
   long  buffer_ptr
                      
   byte  rx_buffer[buffer_length]    'transmit and receive buffers
-  byte  tx_buffer[buffer_length]  
+  byte  tx_buffer[buffer_length]
 
 PUB start(rxpin, txpin, mode, baudrate) : okay
 

@@ -24,7 +24,6 @@ Eigenschaften   : -Benutzung externer Ram, Stringverarbeitung, Array-Verwaltung
                   -Port-Ein-und Ausgabe
                   -RTC-Clock
 
-
 Logbuch         :
 '############################################################ Version 1.2 ######################################################################################################
 01-03-2021      -vom Trios-Basic 3.5 abgeleitete Basic-Version für eine Ein-Propeller-Chip-Version mit Seriell-Interface
@@ -98,6 +97,10 @@ Logbuch         :
                 -Fehler in REM-Befehl behoben ->wurde bei Print-Befehl als Fehler behandelt
                 -668 Longs frei
 
+19-04-2021      -massive Probleme mit dem PSRAM-Chip, ständig Lesefehler, das frustriert :-(
+                -mal sehen, wie ich das Problem beheben kann, hab momentan keine Ahnung, warum es jetzt nicht mehr funktioniert (hatte so lange fehlerfreien Betrieb)
+                -675 Longs frei
+
  --------------------------------------------------------------------------------------------------------- }}
 
 obj
@@ -117,7 +120,7 @@ con
 _CLKMODE     = XTAL1 + PLL16X
 _XINFREQ     = 5_000_000
 
-   version   = 3.5
+   version   = 1.2
 
    fEof      = $FF                     ' dateiende-kennung
    linelen   = 80                      ' Maximum input line length
@@ -434,7 +437,7 @@ PUB main | sa
 con'****************************************** Initialisierung *********************************************************************************************************************
 PRI init
 
-  waitcnt(clkfreq*2+cnt)                                                        'etwas warten auf ESP-Grafik
+  waitcnt(clkfreq+cnt)                                                        'etwas warten auf ESP-Grafik
   pauseTime := 0                                                                'pause wert auf 0
   fileOpened := 0                                                               'keine datei geoeffnet
   speicheranfang:=$0                                                            'Programmspeicher beginnt ab adresse 0 im eRam
@@ -449,7 +452,7 @@ PRI init
      reclaim
      ios.ram_wrbyte(0,PMARK_RAM)                                                'Reclaim-Marker löschen
   else
-     ios.ram_fill(0,$3FFFF,$0)
+     ios.ram_fill(0,$FFFFF,$0)
 
 '*********************************** Startparameter ***********************************************************************************************************
   ios.sdmount                                                                   'SD-Karte Mounten
@@ -1443,9 +1446,11 @@ PRI factor | tok, a,b,c,d,e,g,f,fnum                                            
 
       226:'I2C-Funktion
            return fl.ffloat(I2C_Funktion)
+
       228:'TEMP
            a:=expr(1)                                                           'pin für Temperaturmessung
            return getTemperature(a)
+
       229:'Font
            return fl.ffloat(fontsatz)
       "-":
@@ -3060,9 +3065,7 @@ PUB ping(adr):nack                                       'plx: device anpingen
 
 DAT
                         org 0
-'
-' Entry
-'
+
 entry                   jmp     #entry                   'just loops
 
 

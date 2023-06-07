@@ -1,7 +1,7 @@
 {{
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Autor: Reinhard Zielinski                                                                                 │
-│ Copyright (c) 2021 Reinhard Zielinski                                                                    │
+│ Autor: Reinhard Zielinski                                                                            │
+│ Copyright (c) 2021 Reinhard Zielinski                                                                │
 │ See end of file for terms of use.                                                                    │
 │ Die Nutzungsbedingungen befinden sich am Ende der Datei                                              │
 └──────────────────────────────────────────────────────────────────────────────────────────────────────┘
@@ -54,11 +54,29 @@ SYSVAR          = $0FFFA3                               'Adresse des obersten fr
    RX           = 24
    TX           = 25
 
+
+
+{{  PSRAM64H driver. Für PSRAM-Chip 8M (64Mbit)
+
+                              Vdd(+3.3V)
+                                  
+                  PSRAM64H        │  1µ low ESR
+                                  ┣────── Vss
+             ┌────────────────┐   │ 0.1µF
+   P16 ─────┤1 /CS    Vcc   8├───┻────── Vss
+   P9  ─────┤2 SIO1   SIO3  7├────────── P11
+   P10 ─────┤3 SIO2   CLK   6├────────── P17
+          ┌──┤4 GND    SIO0  5├────────── P8
+            └────────────────┘
+         Vss
+
+}}
 OBJ
         psram  :"PSRAM_PASM_HIVE"'_Tiny"                      '1Cog
         SDFat  :"adm-fat"                                     '1Cog
         rtc    :"adm-rtc"
-        ser    :"FullDuplexSerialExtended"'                   '1Cog
+        ser    :"RS232_COMEngine"'"FullDuplexSerial"'Extended"'                   '1Cog
+        'ser    :"FullDuplexSerialExtended"'                   '1Cog
                                                         '    ----------
                                                               '3Cog's
 
